@@ -4,7 +4,7 @@ var mPageNo = 0;
 var mLimit = 20;
 
 window.onload = function () {    
-		fetchInvoiceListFromServer();   
+		fetchInvoiceListFromServer("");   
         };
 
 
@@ -16,7 +16,7 @@ $('#previous_btn').on('click', function(e) {
                     	return false;
                     }
                     mPageNo = mPageNo - mLimit;
-                    fetchInvoiceListFromServer()
+                    fetchInvoiceListFromServer("")
 
  });
 
@@ -28,9 +28,27 @@ $('#next_btn').on('click', function(e) {
                     	return false;
                     }
                     mPageNo = mPageNo + mLimit;
-                    fetchInvoiceListFromServer()
+                    fetchInvoiceListFromServer("")
 
  });
+
+$('#search_btn_id').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    
+                    var lSerachInvoice = $("#search_txtfld_id").val();
+                     lSerachInvoice            = lSerachInvoice.trim();
+   
+                     if(lSerachInvoice.length > 0)
+                     {
+                        mPageNo = 0;
+                       
+                      } 
+                      fetchInvoiceListFromServer(lSerachInvoice)
+
+ });
+
+
 
 function invoiceBtnAction()
 {
@@ -38,7 +56,7 @@ function invoiceBtnAction()
 }
 
 
-function fetchInvoiceListFromServer()
+function fetchInvoiceListFromServer(serachTxt)
 {
 	/*
 	{
@@ -53,10 +71,18 @@ function fetchInvoiceListFromServer()
     startLoadingIndicatorWithLabel("Loading...");
     var lUrl = TxConstants.BaseUrl + "/getInvoices";
     console.log("Request Url: " + lUrl);
+    var lPostData =  "";
+    if(serachTxt.length > 0) {
+        lPostData = { "pageno": mPageNo, "limit" : mLimit, "filter": { "invoiceNumber" : parseInt(serachTxt) } };
+    }
+    else {
+        lPostData =  { "pageno": mPageNo, "limit" : mLimit};
+    }
+
     $.ajax({
            type: "POST",
            url: lUrl,
-           data: JSON.stringify({ "pageno": mPageNo, "limit" : mLimit}),
+           data: JSON.stringify(lPostData),   //{ "pageno": mPageNo, "limit" : mLimit}
            dataType: "json",
            contentType: 'application/json',
            success:function(responseStr){
