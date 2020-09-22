@@ -4,7 +4,7 @@
 }
 
 #invoice_main_div {
-	margin: 50px;
+	margin: 20px;
 }
 
 
@@ -15,4 +15,13 @@
 #invoice_search_form {
 	margin-top: 20px;
 	margin-left: 20px;
+	max-width: 350px;
+}
+
+#search_txtfld_id {
+	max-width: 200px;
+	border:  1px solid #ccc;
+	border-radius: 4px;
+	height: 33px;
+	padding-left: 8px;
 }
