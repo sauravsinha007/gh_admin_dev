@@ -32,6 +32,9 @@ $('#next_btn').on('click', function(e) {
 
  });
 
+
+
+
 $('#search_btn_id').on('click', function(e) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
@@ -49,12 +52,47 @@ $('#search_btn_id').on('click', function(e) {
  });
 
 
-
 function invoiceBtnAction()
 {
     location.href='home.html';
 }
 
+function invoiceDownloadBtnAction(invoiceNumber)
+{
+  //alert("invoice download = " + invoiceId);
+  //https://thegreenhouse.s3.amazonaws.com/invoice/1117.pdf
+  var lInvoiveDownloadUrl =  "https://thegreenhouse.s3.amazonaws.com/invoice/" + invoiceNumber + ".pdf";
+  var lFileName = "Invoice_" + invoiceNumber + ".pdf";
+
+  invoiceSaveToDisk(lInvoiveDownloadUrl,lFileName);
+}
+
+function invoiceSaveToDisk(fileURL, fileName) {
+    // for non-IE
+    if (!window.ActiveXObject) {
+        var save = document.createElement('a');
+        save.href = fileURL;
+        save.target = '_blank';
+        save.download = fileName || 'unknown';
+
+        var evt = new MouseEvent('click', {
+            'view': window,
+            'bubbles': true,
+            'cancelable': false
+        });
+        save.dispatchEvent(evt);
+
+        (window.URL || window.webkitURL).revokeObjectURL(save.href);
+    }
+
+    // for IE < 11
+    else if ( !! window.ActiveXObject && document.execCommand)     {
+        var _window = window.open(fileURL, '_blank');
+        _window.document.close();
+        _window.document.execCommand('SaveAs', true, fileName || fileURL)
+        _window.close();
+    }
+}
 
 function fetchInvoiceListFromServer(serachTxt)
 {
@@ -109,7 +147,7 @@ function didReceivedResponseOfInvoiceInfoList(responseInfo)
     	var lInvoiceHtml = "";
     
     	var lInvoiceHtml = "<table id='redeemPannelTable' class = 'table table-striped' style='border:none;'>";
-    	lInvoiceHtml = lInvoiceHtml + "<thead><tr><th>Invoice No</th><th>Customer Name</th><th>Type</th><th>Invoice Date</th><th>Total Amount</th><th>Status</th></tr></thead>";
+    	lInvoiceHtml = lInvoiceHtml + "<thead><tr><th>Invoice No</th><th>Customer Name</th><th>Type</th><th>Invoice Date</th><th>Total Amount</th><th>Status</th><th></th></tr></thead>";
     	lInvoiceHtml = lInvoiceHtml + "<tbody>"
     	for(var i = 0; i < mInvoiceList.length ; i++)
     	{
@@ -175,7 +213,7 @@ function createCellForInvoiceTableWithInfo(invoiceInfo,indexNo)
         lInvoiceStatus = "Invalid";
 
     var lHtmlString = "";
-    lHtmlString = lHtmlString + "<tr id='invoiceTr_"+indexNo+"'style='cursor:pointer;color:"+lFontColor+";'><td>" + lInvoiceNo + "</td><td>" + lCustomerName + "</td><td>" + lType + "</td><td>" + lInvoiceDate + "</td><td>" + lTotalAmt + "</td><td>" + lInvoiceStatus + "</td></tr>";
+    lHtmlString = lHtmlString + "<tr id='invoiceTr_"+indexNo+"'style='cursor:pointer;color:"+lFontColor+";'><td>" + lInvoiceNo + "</td><td>" + lCustomerName + "</td><td>" + lType + "</td><td>" + lInvoiceDate + "</td><td>" + lTotalAmt + "</td><td>" + lInvoiceStatus + "</td><td><img src='img/file_download-img.png' class='file_download_class' onclick='invoiceDownloadBtnAction(this.id)' id='" + lInvoiceNo + "'></td></tr>";
 
     return lHtmlString;
     
